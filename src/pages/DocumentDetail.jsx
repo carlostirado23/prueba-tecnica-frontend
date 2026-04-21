@@ -143,8 +143,9 @@ export default function DocumentDetail() {
       } else {
         setError('No se pudo generar el enlace de descarga');
       }
-    } catch {
-      setError('Error al descargar');
+    } catch (e) {
+      console.error('Download error:', e);
+      setError(`Error al descargar: ${e.message}`);
     }
     setDownloading(false);
   };
