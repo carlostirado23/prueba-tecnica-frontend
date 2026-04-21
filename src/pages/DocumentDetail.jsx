@@ -134,7 +134,12 @@ export default function DocumentDetail() {
       });
       if (res.ok) {
         const { url } = await res.json();
-        window.open(url, '_blank');
+        const a = document.createElement('a');
+        a.href = url;
+        a.setAttribute('download', '');
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
       } else {
         setError('No se pudo generar el enlace de descarga');
       }
