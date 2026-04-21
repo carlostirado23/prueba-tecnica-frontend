@@ -89,7 +89,7 @@ function Field({ label, value }) {
 
 export default function DocumentDetail() {
   const { id } = useParams();
-  const [document, setDocument] = useState(null);
+  const [doc, setDoc] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [downloading, setDownloading] = useState(false);
@@ -97,10 +97,10 @@ export default function DocumentDetail() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchDocument();
+    fetchDoc();
   }, [id, user]);
 
-  const fetchDocument = async () => {
+  const fetchDoc = async () => {
     try {
       const response = await fetch(`${window.API_URL}/documents/${id}`, {
         headers: { Authorization: `Bearer ${user.token}` },
@@ -108,7 +108,7 @@ export default function DocumentDetail() {
 
       if (response.ok) {
         const data = await response.json();
-        setDocument(data);
+        setDoc(data);
       } else if (response.status === 404) {
         setError('Documento no encontrado');
       } else {
@@ -134,12 +134,12 @@ export default function DocumentDetail() {
       });
       if (res.ok) {
         const { url } = await res.json();
-        const a = document.createElement('a');
+        const a = window.document.createElement('a');
         a.href = url;
         a.setAttribute('download', '');
-        document.body.appendChild(a);
+        window.document.body.appendChild(a);
         a.click();
-        document.body.removeChild(a);
+        window.document.body.removeChild(a);
       } else {
         setError('No se pudo generar el enlace de descarga');
       }
@@ -150,11 +150,11 @@ export default function DocumentDetail() {
     setDownloading(false);
   };
 
-  const renderMetadata = (doc) => {
-    const m = doc.metadata || {};
-    if (doc.type === 'concepto_medico') return <MetadataConcepto m={m} />;
-    if (doc.type === 'paraclinico') return <MetadataParaclinico m={m} />;
-    if (doc.type === 'examen_complementario') return <MetadataExamenComp m={m} />;
+  const renderMetadata = (d) => {
+    const m = d.metadata || {};
+    if (d.type === 'concepto_medico') return <MetadataConcepto m={m} />;
+    if (d.type === 'paraclinico') return <MetadataParaclinico m={m} />;
+    if (d.type === 'examen_complementario') return <MetadataExamenComp m={m} />;
     return <p className="text-sm text-gray-600">Sin información adicional</p>;
   };
 
@@ -188,28 +188,28 @@ export default function DocumentDetail() {
             <div className="inline-block w-8 h-8 mb-3 border-4 rounded-full border-medical-blue border-t-transparent animate-spin"></div>
             <p className="text-gray-600">Cargando documento...</p>
           </div>
-        ) : document ? (
+        ) : doc ? (
           <div className="p-8 bg-white rounded-lg shadow-lg">
             <div className="flex items-start justify-between mb-8">
               <div>
                 <h1 className="mb-2 text-3xl font-bold text-gray-900">
-                  {TYPE_LABELS[document.type] || document.type}
+                  {TYPE_LABELS[doc.type] || doc.type}
                 </h1>
                 <p className="text-gray-600">
-                  Fecha: {new Date(document.created_at).toLocaleDateString('es-CO')}
+                  Fecha: {new Date(doc.created_at).toLocaleDateString('es-CO')}
                 </p>
               </div>
-              <span className={`px-3 py-1 rounded-full text-sm font-semibold ${document.status ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
-                {document.status ? 'Completado' : 'En proceso'}
+              <span className={`px-3 py-1 rounded-full text-sm font-semibold ${doc.status ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                {doc.status ? 'Completado' : 'En proceso'}
               </span>
             </div>
 
             <div className="p-6 mb-8 rounded-lg bg-gray-50">
               <h2 className="mb-4 text-lg font-semibold text-gray-900">Información del documento</h2>
-              {renderMetadata(document)}
+              {renderMetadata(doc)}
             </div>
 
-            {document.status ? (
+            {doc.status ? (
               <button
                 onClick={handleDownload}
                 disabled={downloading}
