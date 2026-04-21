@@ -7,7 +7,15 @@ export function ProtectedRoute({ children }) {
 
   if (loading) return <div className="flex items-center justify-center min-h-screen">Cargando...</div>;
 
-  return user ? children : <Navigate to="/login" />;
+  return user ? children : <Navigate to="/login" replace />;
+}
+
+export function PublicRoute({ children }) {
+  const { user, loading } = useContext(AuthContext);
+
+  if (loading) return <div className="flex items-center justify-center min-h-screen">Cargando...</div>;
+
+  return user ? <Navigate to="/dashboard" replace /> : children;
 }
 
 export function AdminRoute({ children }) {
